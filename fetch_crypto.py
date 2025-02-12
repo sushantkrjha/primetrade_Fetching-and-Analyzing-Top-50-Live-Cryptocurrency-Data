@@ -1,5 +1,9 @@
 import requests
 import pandas as pd
+import gspread
+from gspread_dataframe import set_with_dataframe
+
+sa = gspread.service_account(filename="/home/sushant/old/sushant/project/assignment/primtrade/crendential.json")
 
 # API URL and parameters
 API_URL = "https://api.coingecko.com/api/v3/coins/markets"
@@ -32,10 +36,9 @@ def save_to_excel():
         df.columns = ["Cryptocurrency", "Symbol", "Current Price (USD)", "Market Capitalization", "24h Volume", "24h Change (%)"]
 
         # Save to Excel
-        with pd.ExcelWriter(EXCEL_FILE, mode="w", engine="openpyxl") as writer:
-            df.to_excel(writer, index=False, sheet_name="Live Data")
-
-        print("Excel updated successfully.")
+        sh = sa.open("crypto_data")
+        sheet = sh.worksheet("Sheet1")
+        set_with_dataframe(sheet, df)
 
 # Run once
 if __name__ == "__main__":
